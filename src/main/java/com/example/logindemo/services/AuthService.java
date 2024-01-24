@@ -13,10 +13,10 @@ import java.util.Optional;
 public class AuthService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private UserRepository userRepository;
-    private SessionRepository sessionRepository;
+ //   private SessionRepository sessionRepository;
     public AuthService(UserRepository userRepository, SessionRepository sessionRepository, BCryptPasswordEncoder bCryptPasswordEncoder){
         this.userRepository=userRepository;
-        this.sessionRepository=sessionRepository;
+  //      this.sessionRepository=sessionRepository;
         this.bCryptPasswordEncoder=bCryptPasswordEncoder;
     }
 
@@ -36,7 +36,7 @@ public class AuthService {
 
 
 
-    public void login(){
+    public void login(String email, String password){
 
     }
 

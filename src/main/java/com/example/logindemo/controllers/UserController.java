@@ -15,16 +15,16 @@ public class UserController {
         this.userService=userService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUserDetails(@PathVariable("id") Long userId){
-       UserDTO userDTO= userService.getUserDetails(userId);
-       return new ResponseEntity<>(userDTO, HttpStatus.OK);
-    }
-
-    @PostMapping("/{id}/roles")
-    public ResponseEntity<UserDTO> setUserRoles(
-            @PathVariable("id") Long userId, @RequestBody SetUserRoleRequestDTO request){
-            UserDTO userDTO= userService.setUserRoles(userId, request.getRoleIds());
-            return new ResponseEntity<>(userDTO, HttpStatus.OK);
-    }
+//    @GetMapping("/{id}")
+//    public ResponseEntity<UserDTO> getUserDetails(@PathVariable("id") Long userId){
+//       UserDTO userDTO= userService.getUserDetails(userId);
+//       return new ResponseEntity<>(userDTO, HttpStatus.OK);
+//    }
+//
+//    @PostMapping("/{id}/roles")
+//    public ResponseEntity<UserDTO> setUserRoles(
+//            @PathVariable("id") Long userId, @RequestBody SetUserRoleRequestDTO request){
+//            UserDTO userDTO= userService.setUserRoles(userId, request.getRoleIds());
+//            return new ResponseEntity<>(userDTO, HttpStatus.OK);
+//    }
 }
