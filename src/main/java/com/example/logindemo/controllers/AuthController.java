@@ -2,6 +2,7 @@ package com.example.logindemo.controllers;
 
 import com.example.logindemo.DTO.*;
 import com.example.logindemo.exceptions.UserAlreadyExistsException;
+import com.example.logindemo.exceptions.UserDoesNotExistsException;
 import com.example.logindemo.models.SessionStatus;
 import com.example.logindemo.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,19 @@ public class AuthController {
     }
 
 
-//    @PostMapping("/login")
-//    public ResponseEntity<UserDTO> login (@RequestBody LoginRequestDTO request){
-//        return authService.login(request.getEmail(), request.getPassword());
-//    }
-//
-//
+    @PostMapping("/login")
+    public ResponseEntity<UserDTO> login (@RequestBody LoginRequestDTO request) throws UserAlreadyExistsException, UserDoesNotExistsException {
+        return authService.login(request.getEmail(), request.getPassword());
+
+        // was trying global exception not worked
+        //  ResponseEntity<UserDTO> res= authService.login(request.getEmail(), request.getPassword());
+//        if(res.hasBody()){
+//            throw new UserDoesNotExistsException("user does not exists");
+//        }
+//        return res;
+    }
+
+
 //    @PostMapping("/logout")
 //    public ResponseEntity<void> logout(@RequestBody LogoutRequestDTO request){
 //        return authService.logout(request.getToken(), request.getUserId());
