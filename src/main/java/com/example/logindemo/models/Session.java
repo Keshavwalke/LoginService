@@ -20,7 +20,8 @@ public class Session extends BaseModel{
     private User user;
     private String token;
     private Date ExpiringAt;
+    private boolean isDeleted;
 
-    @Enumerated(EnumType.ORDINAL)           //ORDINAL MEANS IT'LL STORE 1,2,3 AS VALUE OF ENUM
+    @Enumerated(EnumType.ORDINAL)           //ORDINAL MEANS IT'LL STORE 0,1,2,3 AS VALUE OF ENUM
     private SessionStatus sessionStatus;
 }

@@ -2,6 +2,8 @@ package com.example.logindemo.services;
 
 import com.example.logindemo.DTO.UserDTO;
 import com.example.logindemo.exceptions.UserAlreadyExistsException;
+import com.example.logindemo.models.Session;
+import com.example.logindemo.models.SessionStatus;
 import com.example.logindemo.repositories.SessionRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
@@ -14,16 +16,17 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.MultiValueMapAdapter;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Service
 public class AuthService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private UserRepository userRepository;
- //   private SessionRepository sessionRepository;
+    private SessionRepository sessionRepository;
     public AuthService(UserRepository userRepository, SessionRepository sessionRepository, BCryptPasswordEncoder bCryptPasswordEncoder){
         this.userRepository=userRepository;
-  //      this.sessionRepository=sessionRepository;
+        this.sessionRepository=sessionRepository;
         this.bCryptPasswordEncoder=bCryptPasswordEncoder;
     }
 
@@ -55,9 +58,15 @@ public class AuthService {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         // Since user is valid, creating one token for him, create token as well
-        String token= RandomStringUtils.random(20);
+        String token= RandomStringUtils.randomAscii(20);
         MultiValueMap<String,String> hdr= new LinkedMultiValueMap<>();
         hdr.add("AUTH_TOKEN", token);
+
+        Session session =new Session();
+        session.setSessionStatus(SessionStatus.ACTIVE);
+        session.setToken(token);
+        session.setUser(user);
+        sessionRepository.save(session);
 
         UserDTO userDTO= UserDTO.from(user);
         ResponseEntity<UserDTO> response= new ResponseEntity<>(
@@ -65,7 +74,36 @@ public class AuthService {
         return response;
     }
 
-    public void validate(){
+    public SessionStatus validate(String token, Long userId){
+        //tried to check token exist in DB , if not exist return INVALID
+        Optional<Session> sessionOptional=sessionRepository.findByTokenAndUser_Id(token, userId);
+        if(sessionOptional.isEmpty()){
+            return SessionStatus.INVALID;
+        }
+        //if  session is not active then returned EXPIRED
+        Session session=sessionOptional.get();
+        if(!session.getSessionStatus().equals(SessionStatus.ACTIVE)) {
+            return SessionStatus.EXPIRED;
+        }
+//        if (!session.getExpiringAt().after(new Date())) {
+//            return SessionStatus.EXPIRED;           //check if session is expired
+//        }
 
+        return SessionStatus.ACTIVE;           //that means this is active session
+    }
+
+
+
+    public ResponseEntity<Void> logout(String token, Long userId){
+        Optional<Session> sessionOptional=sessionRepository.findByTokenAndUser_Id(token, userId);
+        if(sessionOptional.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Session session=sessionOptional.get();
+        session.setSessionStatus(SessionStatus.LOGGED_OUT);
+        session.setDeleted(true);
+        sessionRepository.save(session);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

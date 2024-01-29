@@ -38,10 +38,11 @@ public class AuthController {
     }
 
 
-//    @PostMapping("/logout")
-//    public ResponseEntity<void> logout(@RequestBody LogoutRequestDTO request){
-//        return authService.logout(request.getToken(), request.getUserId());
-//    }
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestBody LogoutRequestDTO request){
+        return authService.logout(request.getToken(), request.getUserId());
+        //void return type in generics is uppercase(Void)
+    }
 
     @PostMapping("/signup")
     public ResponseEntity<UserDTO> signUp (@RequestBody SignUpRequestDTO request) throws UserAlreadyExistsException {
@@ -49,10 +50,10 @@ public class AuthController {
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
-//    @GetMapping("/validate")
-//    public ResponseEntity<SessionStatus> validateToken(ValidateTokenRequestDTO request){
-//        SessionStatus sessionStatus= authService.validate(request.getToken(), request.getUserId());
-//        return new ResponseEntity<>(sessionStatus, HttpStatus.OK);
-//    }
+    @PostMapping("/validate")
+    public ResponseEntity<SessionStatus> validateToken(@RequestBody ValidateTokenRequestDTO request){
+        SessionStatus sessionStatus= authService.validate(request.getToken(), request.getUserId());
+        return new ResponseEntity<>(sessionStatus, HttpStatus.OK);
+    }
 }
 
