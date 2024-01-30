@@ -5,6 +5,8 @@ import com.example.logindemo.exceptions.UserAlreadyExistsException;
 import com.example.logindemo.models.Session;
 import com.example.logindemo.models.SessionStatus;
 import com.example.logindemo.repositories.SessionRepository;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,8 +59,18 @@ public class AuthService {
         if(!bCryptPasswordEncoder.matches(password, user.getPassword())){ //(raw password,Encoded password)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        // Since user is valid, creating one token for him, create token as well
-        String token= RandomStringUtils.randomAscii(20);
+        // Since user is valid, creating one token for him
+       // String token= RandomStringUtils.randomAscii(20);
+
+        //creating JWT token
+        String secretKey = "KeshavRajIsmySecretKeyAndItsNotSecureLaughOutLoud";
+        String subject = email;     // unique identifier
+        long expirationTime = 86400000; // 24 hours in milliseconds
+
+        String token = Jwts.builder().setSubject(subject)
+                .setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(SignatureAlgorithm.HS256, secretKey).compact();
+
         MultiValueMap<String,String> hdr= new LinkedMultiValueMap<>();
         hdr.add("AUTH_TOKEN", token);
 
@@ -69,8 +81,7 @@ public class AuthService {
         sessionRepository.save(session);
 
         UserDTO userDTO= UserDTO.from(user);
-        ResponseEntity<UserDTO> response= new ResponseEntity<>(
-                     userDTO, hdr, HttpStatus.OK);
+        ResponseEntity<UserDTO> response= new ResponseEntity<>(userDTO, hdr, HttpStatus.OK);
         return response;
     }
 
