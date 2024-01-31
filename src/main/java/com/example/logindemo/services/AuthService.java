@@ -2,6 +2,7 @@ package com.example.logindemo.services;
 
 import com.example.logindemo.DTO.UserDTO;
 import com.example.logindemo.exceptions.UserAlreadyExistsException;
+import com.example.logindemo.exceptions.UserDoesNotExistsException;
 import com.example.logindemo.models.Session;
 import com.example.logindemo.models.SessionStatus;
 import com.example.logindemo.repositories.SessionRepository;
@@ -36,7 +37,7 @@ public class AuthService {
         //code to check if the user is already present in the database
         Optional<User> userOptional= userRepository.findByEmail(email);
         if(!userOptional.isEmpty()){
-            throw new UserAlreadyExistsException("User with email already exist...");
+            throw new UserAlreadyExistsException("User with email "+email +" already exist...");
         }
         //this means user not present in database so storing in database
         User user = new User();
@@ -48,11 +49,11 @@ public class AuthService {
 
 
 
-    public ResponseEntity<UserDTO> login(String email, String password) throws UserAlreadyExistsException {
+    public ResponseEntity<UserDTO> login(String email, String password) throws UserDoesNotExistsException {
         //found the user in DB by email and checked if not present thrown excpetion
         Optional<User> userOptional=userRepository.findByEmail(email);
         if(userOptional.isEmpty()){
-            throw new UserAlreadyExistsException("User with email"+email +" does not exists...");
+            throw new UserDoesNotExistsException("User with email  "+email +" does not exists...");
         }
         //Got details of user,checked if User given password in request matched with DB password
         User user= userOptional.get();
