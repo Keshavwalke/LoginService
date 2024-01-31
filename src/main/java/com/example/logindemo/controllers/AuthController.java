@@ -28,13 +28,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<UserDTO> login (@RequestBody LoginRequestDTO request) throws UserAlreadyExistsException, UserDoesNotExistsException {
         return authService.login(request.getEmail(), request.getPassword());
-
-        // was trying global exception not worked
-//        ResponseEntity<UserDTO> res= authService.login(request.getEmail(), request.getPassword());
-//        if(res.hasBody()){
-//            throw new UserDoesNotExistsException("user does not exists");
-//        }
-//        return res;
     }
 
 
