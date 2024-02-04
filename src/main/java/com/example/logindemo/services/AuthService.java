@@ -86,24 +86,26 @@ public class AuthService {
         return response;
     }
 
-    public SessionStatus validate(String token, Long userId){
+    public Optional<UserDTO> validate(String token, Long userId){
         //tried to check token exist in DB , if not exist return INVALID
         Optional<Session> sessionOptional=sessionRepository.findByTokenAndUser_Id(token, userId);
         if(sessionOptional.isEmpty()){
-            return SessionStatus.INVALID;
+            return Optional.empty();
         }
         //if  session is not active then returned EXPIRED
-        Session session=sessionOptional.get();
-        if(!session.getSessionStatus().equals(SessionStatus.ACTIVE)) {
-            return SessionStatus.EXPIRED;
-        }
+//        Session session=sessionOptional.get();
+//        if(!session.getSessionStatus().equals(SessionStatus.ACTIVE)) {
+//            return SessionStatus.EXPIRED;
+//        }
 //        if (!session.getExpiringAt().after(new Date())) {
 //            return SessionStatus.EXPIRED;           //check if session is expired
 //        }
 
-        return SessionStatus.ACTIVE;           //that means this is active session
+        User user = userRepository.findById(userId).get();
+        UserDTO userDTO= UserDTO.from(user);
+        return Optional.of(userDTO);
+       // return SessionStatus.ACTIVE;           //that means this is active session
     }
-
 
 
     public ResponseEntity<Void> logout(String token, Long userId){

@@ -12,6 +12,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -44,9 +46,18 @@ public class AuthController {
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<SessionStatus> validateToken(@RequestBody ValidateTokenRequestDTO request){
-        SessionStatus sessionStatus= authService.validate(request.getToken(), request.getUserId());
-        return new ResponseEntity<>(sessionStatus, HttpStatus.OK);
+    public ResponseEntity<ValidateTokenResponseDTO> validateToken(@RequestBody ValidateTokenRequestDTO request){
+        Optional<UserDTO>  userDTO= authService.validate(request.getToken(), request.getUserId());
+        if(userDTO.isEmpty()){
+            ValidateTokenResponseDTO response=new ValidateTokenResponseDTO();
+            response.setSessionStatus(SessionStatus.INVALID);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        ValidateTokenResponseDTO response=new ValidateTokenResponseDTO();
+        response.setSessionStatus(SessionStatus.ACTIVE);
+        response.setUserDto(userDTO.get());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
 
