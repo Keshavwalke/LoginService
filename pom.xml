@@ -109,6 +109,12 @@
         </dependency>
         -->
 
+        <!-- library for OAuth server  -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-authorization-server</artifactId>
+        </dependency>
+
 
     </dependencies>
 
